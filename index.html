@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MR Beauty Admin</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Admin">
+<style>
+:root{--mr-yellow:#C8CF04;--bg:#000;--card:#f4f4f4;--dark:#1c1c1f;}
+@font-face{font-family:"MontserratLocal";src:url("fonts/Montserrat-Regular.ttf") format("truetype");font-weight:400;font-style:normal;}
+@font-face{font-family:"MontserratLocal";src:url("fonts/Montserrat-SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;}
+@font-face{font-family:"MontserratLocal";src:url("fonts/Montserrat-Bold.ttf") format("truetype");font-weight:700;font-style:normal;}
+*{box-sizing:border-box}
+html,body{width:100%;max-width:100%;overflow-x:hidden;}
+body{margin:0;background:#000;color:#fff;font-family:"MontserratLocal",Arial,sans-serif;min-height:100dvh;overflow:hidden;overscroll-behavior-x:none;}
+button,input,select{accent-color:#C8CF04;font-family:"MontserratLocal",Arial,sans-serif;}
+
+/* iOS/Safari graue Fokus-Balken im Login entfernen */
+*{
+  -webkit-tap-highlight-color: transparent !important;
+}
+.loginLock,
+.loginBox,
+.loginCard,
+.loginTitle,
+.loginLabel,
+.loginFieldWrap,
+.loginEye,
+.forgotBtn,
+.rememberBox,
+.loginBtn,
+.loginHint{
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+.loginInput{
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
+.loginInput:focus,
+.loginInput:active,
+.loginEye:focus,
+.loginEye:active,
+.loginFieldWrap:focus,
+.loginFieldWrap:active,
+.loginFieldWrap:focus-within{
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+.loginFieldWrap:focus-within{
+  border-color:#C8CF04 !important;
+}
+.loginEye::-moz-focus-inner,
+.loginBtn::-moz-focus-inner,
+.forgotBtn::-moz-focus-inner,
+.rememberBox::-moz-focus-inner{
+  border:0 !important;
+}
+
+
+/* LOGIN – gleiche Optik wie Kassen-App */
+body.auth-loading .appShell,body.logged-out .appShell{display:none!important;}
+body.logged-out .loginLock{display:flex;}
+body.logged-in .loginLock{display:none!important;}
+.loginLock{display:none;position:fixed;inset:0;width:100%;min-height:100dvh;background:#000;z-index:20000;overflow:hidden;color:#000;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top) + 58px) 0 0;}
+.loginBox{width:100%;max-width:430px;display:flex;flex-direction:column;align-items:center;}
+.loginLogo{width:176px;height:auto;display:block;margin:0 auto 92px auto;}
+.loginCard{width:calc(100% - 48px);max-width:370px;background:#f4f4f4;border-radius:24px;box-shadow:0 0 28px rgba(255,255,255,.12);padding:68px 24px 21px;transform:translateY(-20px);}
+.loginTitle{text-align:center;color:#000;font-size:34px;font-weight:700;line-height:1;margin:0 0 38px 0;letter-spacing:-.8px;}
+.loginLabel{display:block;color:#000;font-size:12px;font-weight:400;line-height:1;margin:0 0 9px 0;transform:translateY(-35px);}
+.loginFieldWrap{width:100%;height:50px;border:1px solid #999;border-radius:7px;background:transparent;display:flex;align-items:center;padding:0 15px;margin:0 0 22px 0;}
+.loginFieldWrap:focus-within{border-color:#C8CF04;}
+.loginFieldWrap.loginInvalid{border-color:#ff4f4f!important;}
+.loginInput{width:100%;border:0;outline:0;background:transparent;color:#000;font-size:14px!important;font-weight:400!important;line-height:1!important;padding:0;min-width:0;caret-color:#000;-webkit-appearance:none;appearance:none;}
+.loginInput::placeholder{color:#8f8f8f;opacity:1;font-size:14px!important;font-weight:400!important;}
+.loginEye{width:31px;height:31px;border:0;background:transparent!important;padding:0;margin-left:8px;color:#C8CF04!important;display:flex;align-items:center;justify-content:center;flex:0 0 31px;-webkit-appearance:none;appearance:none;outline:none;box-shadow:none!important;}
+.loginEye svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
+.loginRow{width:100%;position:relative;display:grid;grid-template-columns:1fr;align-items:start;gap:14px;margin:2px 0 22px 0;}
+.forgotBtn{justify-self:start;width:auto;height:auto;border:0;background:transparent;color:#000;font-size:14px;font-weight:400;line-height:1;padding:0;border-radius:0;white-space:nowrap;transform:translateY(-5px);}
+.forgotMsg{position:absolute;left:0;top:20px;color:#ff4f4f;font-size:11px;font-weight:400;line-height:1.2;opacity:0;pointer-events:none;white-space:nowrap;transition:opacity .16s ease;}
+.forgotMsg.show{opacity:1;}
+.rememberBox{justify-self:start;width:auto;height:auto;border:0;background:transparent;padding:0;border-radius:0;display:flex;align-items:center;gap:7px;color:#000;font-size:14px;font-weight:400;line-height:1;white-space:nowrap;transform:translateY(29px);}
+.rememberCheck{order:2;width:21px;height:21px;border:1.5px solid #C8CF04!important;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#C8CF04!important;font-size:18px;font-weight:700;line-height:1;}
+.rememberBox.off .rememberCheck{color:transparent;}
+.loginBtn{width:100%;height:51px;border:0;border-radius:7px;background:#C8CF04!important;color:#000;font-size:18px;font-weight:400;line-height:1;position:relative;padding:0;transform:translateY(-22px);}
+.loginBtn:active{filter:brightness(1.08);transform:translateY(-22px) scale(.99);}
+.loginBtn.loading{pointer-events:none;color:transparent;}
+.loginBtn.loading::after{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border:2px solid rgba(255,255,255,.55);border-top-color:#fff;border-radius:50%;animation:loginSpin .8s linear infinite;}
+@keyframes loginSpin{to{transform:rotate(360deg)}}
+.loginHint{display:flex;align-items:center;justify-content:center;gap:12px;color:#fff;font-size:15px;font-weight:400;line-height:1.3;margin-top:31px;text-align:center;width:100%;padding:0 18px;}
+.loginShield{color:#C8CF04!important;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.loginShield svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+/* NUR LOGIN: obere Inhalte 40px nach oben, Einloggen-Button bleibt unverändert */
+.loginTitle, .loginFieldWrap, .loginRow{transform:translateY(-40px);}
+
+@media(max-height:820px){.loginLogo{width:162px;margin-bottom:52px}.loginCard{padding:64px 24px 18px}.loginTitle{font-size:32px;margin-bottom:34px}.loginFieldWrap{height:48px;margin-bottom:19px}.loginRow{margin-bottom:20px}.loginHint{margin-top:24px}}
+
+/* ADMIN APP */
+ .appShell{height:100dvh;width:100%;max-width:100vw;display:flex;flex-direction:column;background:#000;overflow-x:hidden;}
+.adminTop{position:sticky;top:0;z-index:10;background:#000;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;border-bottom:1px solid #1e1e1e;}
+.adminHeader{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.adminTitle{position:absolute;left:50%;transform:translateX(-50%);font-size:22px;font-weight:700;line-height:1.1;text-align:center;white-space:nowrap;pointer-events:none;}
+.adminLogo{width:61px;height:auto;}
+.logoutBtn{width:auto;height:30px;padding:0 12px;border:1px solid #C8CF04!important;border-radius:13px;background:transparent;color:#C8CF04!important;font-size:13px;line-height:30px;}
+ .adminContent{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:16px;width:100%;max-width:100%;}
+ .adminGrid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;max-width:1100px;width:100%;margin:0 auto;min-width:0;}
+.card{background:#111;border:1px solid #242424;border-radius:18px;padding:16px;box-shadow:0 10px 24px rgba(0,0,0,.18);min-width:0;overflow:hidden;}
+.cardTitle{font-size:18px;font-weight:700;margin:0 0 6px;color:#fff;}
+.cardSub{font-size:13px;line-height:1.35;color:#b8b8b8;margin:0 0 14px;}
+.actionBtn{width:100%;height:46px;border:0;border-radius:14px;background:#C8CF04!important;color:#000;font-size:15px;font-weight:600;}
+.secondaryBtn{background:#1c1c1f;color:#fff;border:1px solid #333;margin-top:8px;}
+.filterRow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-bottom:10px;min-width:0;}
+.field{width:100%;height:44px;border:0;border-radius:12px;background:#1c1c1f;color:#fff;font-size:15px;padding:0 12px;outline:none;}
+.field:focus{box-shadow:inset 0 0 0 2px var(--mr-yellow);}
+.dateFilterRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-bottom:10px!important;}
+.dateQuickBtn{height:36px;border:1px solid #2a2a2a;border-radius:12px;background:#1c1c1f;color:#fff;font-size:12px;font-weight:500;}
+.dateQuickBtn.active{background:#C8CF04!important;color:#000;border-color:#C8CF04!important;}
+.dateRangeRow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:10px;align-items:center;}
+.dateRangeRow .field{height:34px!important;min-height:34px!important;border-radius:10px!important;background:#1c1c1f!important;border:1px solid #1c1c1f!important;font-size:13px!important;padding:0 10px!important;text-align:center!important;-webkit-appearance:none!important;appearance:none!important;}
+.dateRangeRow .field::-webkit-date-and-time-value{text-align:center;}
+.moreBtn{width:100%;height:42px;border:1px solid #C8CF04!important;border-radius:14px;background:transparent;color:#C8CF04!important;font-size:14px;font-weight:600;margin-top:10px;}
+.countText{color:#b8b8b8;font-size:12px;line-height:1.35;margin:10px 0 0;text-align:center;}
+.receiptsList{display:flex;flex-direction:column;gap:9px;}
+.receiptItem{background:#1c1c1f;border:1px solid #2a2a2a;border-radius:14px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) 142px;gap:8px;align-items:stretch;min-width:0;overflow:hidden;position:relative;}
+.rNumber{font-weight:700;font-size:15px;line-height:1.15;}
+.rMeta{font-size:12px;color:#b8b8b8;margin-top:4px;line-height:1.35;overflow-wrap:anywhere;}
+.rAmount{font-size:15px;font-weight:700;color:#C8CF04!important;white-space:nowrap;line-height:1.15;width:126px;display:grid;grid-template-columns:34px 84px;column-gap:8px;justify-content:end;align-items:baseline;}
+.rCurrency{text-align:right;color:#C8CF04!important;transform:translateX(35px);display:inline-block;}
+.rValue{text-align:right;min-width:84px;color:#C8CF04!important;}
+.receiptRight{display:grid;grid-template-rows:auto 1fr auto;justify-items:end;align-items:start;min-width:142px;width:142px;}.infoBtn{justify-self:end;align-self:end;margin-top:0;border:0;border-radius:999px;background:#C8CF04!important;color:#000;font-size:12px;font-weight:500;padding:6px 12px;min-width:58px;}
+.rStatus{font-size:11px;color:#000;background:#C8CF04!important;border-radius:999px;padding:4px 8px;margin-top:6px;display:inline-block;}
+.rStatus.cancelled{background:#ff4f4f;color:#fff;}
+.infoOverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;display:none;align-items:center;justify-content:center;padding:20px;}
+.infoOverlay.show{display:flex;}
+.infoModal{width:min(430px,100%);background:#111;border:2px solid #C8CF04!important;border-radius:20px;padding:18px;box-shadow:0 0 0 1px rgba(200,207,4,.25),0 18px 40px rgba(0,0,0,.55);}
+.infoModalTitle{font-size:20px;font-weight:800;color:#fff;margin:0 0 14px;}
+.infoRow{display:grid;grid-template-columns:112px minmax(0,1fr);gap:8px;font-size:14px;line-height:1.35;margin:7px 0;align-items:start;}
+.infoLabel{color:#fff;font-weight:700;}
+.infoValue{color:#d8d8d8;overflow-wrap:anywhere;}
+.infoClose{width:100%;height:42px;margin-top:16px;border:0;border-radius:14px;background:#C8CF04!important;color:#000;font-size:15px;font-weight:700;}
+.empty{color:#aaa;font-size:13px;line-height:1.4;padding:14px;background:#1c1c1f;border-radius:14px;}
+.loadingText{color:#C8CF04;font-size:13px;}
+@media(min-width:760px){body{overflow-y:auto;overflow-x:hidden}.appShell{height:auto;min-height:100vh}.adminGrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.wide{grid-column:1/-1}.adminContent{padding:24px}.adminTitle{text-align:left}.receiptItem{grid-template-columns:minmax(0,1fr) 142px}.rMeta{font-size:13px}}
+
+#statusFilter{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  line-height:44px!important;
+  text-align:center!important;
+  text-align-last:center!important;
+  padding-left:12px!important;
+  padding-right:30px!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M0 0h12L6 7z' fill='%23FFFFFF'/%3E%3C/svg%3E")!important;
+  background-position:calc(50% + 38px) center!important;
+  background-size:12px 7px!important;
+  background-repeat:no-repeat!important;
+}
+
+
+.filterRow .field{font-size:12px!important;font-weight:500!important;}
+#searchInput{background-image:none!important;}
+
+
+.rStatusLine{font-size:12px;color:#b8b8b8;line-height:1.35;}
+.rStatusValuePaid{color:#2FAF54;font-weight:700;}
+.rStatusValueCancelled{color:#ff4f4f;font-weight:700;}
+
+
+.statusDropdownWrap{position:relative;width:100%;}
+.statusDropdownBtn{
+  position:relative;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 34px 0 12px!important;
+  border:0!important;
+  background:#1c1c1f!important;
+  color:#fff!important;
+  font-size:12px!important;
+  font-weight:500!important;
+}
+.statusArrow{
+  position:absolute;
+  right:24px;
+  top:50%;
+  transform:translateY(-50%);
+  width:0;
+  height:0;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:6px solid #fff;
+}
+.statusDropdownMenu{
+  display:none;
+  position:absolute;
+  top:42px;
+  right:0;
+  width:100%;
+  background:#1c1c1f;
+  border:1px solid #C8CF04!important;
+  border-radius:14px;
+  overflow:hidden;
+  z-index:80;
+  box-shadow:0 12px 34px rgba(0,0,0,.55);
+}
+.statusDropdownMenu.show{display:block;}
+.statusDropdownMenu button{
+  width:100%;
+  height:36px;
+  line-height:36px;
+  border:0;
+  border-bottom:1px solid #2a2a2a;
+  border-radius:0;
+  background:#1c1c1f;
+  color:#fff;
+  font-size:12px;
+  font-weight:500;
+}
+.statusDropdownMenu button:last-child{border-bottom:0;}
+.statusDropdownMenu button:active{background:#C8CF04;color:#000;}
+
+
+/* Pixelgenau wie obere Filterbuttons */
+.filterRow{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:8px!important;
+  align-items:start!important;
+}
+#searchInput,
+.statusDropdownWrap,
+.statusDropdownBtn{
+  height:36px!important;
+  min-height:36px!important;
+}
+#searchInput{
+  padding:0 12px!important;
+  font-size:12px!important;
+  line-height:36px!important;
+  border-radius:12px!important;
+}
+.statusDropdownWrap{display:block!important;}
+.statusDropdownBtn{
+  width:100%!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:1!important;
+  text-align:center!important;
+  font-size:12px!important;
+  border-radius:12px!important;
+}
+.statusArrow{
+  right:10px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+}
+
+
+.downloadRow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:8px;
+  margin:10px 0 0;
+}
+.downloadBtn{
+  width:100%;
+  height:36px;
+  border:0;
+  border-radius:12px;
+  background:#ffffff!important;
+  color:#000!important;
+  font-size:12px;
+  font-weight:700;
+}
+
+
+/* Einheitlicher Button-Blink wie Kassen-App */
+.actionBtn,
+.downloadBtn,
+.infoBtn,
+.infoClose,
+.logoutBtn,
+.infoBtn,
+button.actionBtn{
+  position:relative!important;
+  overflow:hidden!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+
+.actionBtn.mrBtnBlink::after,
+.downloadBtn.mrBtnBlink::after,
+.infoBtn.mrBtnBlink::after,
+.infoClose.mrBtnBlink::after,
+.logoutBtn.mrBtnBlink::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:rgba(255,255,255,.42);
+  opacity:0;
+  pointer-events:none;
+  animation:mrBtnBlinkFlash .16s ease-out;
+}
+
+@keyframes mrBtnBlinkFlash{
+  0%{opacity:0;}
+  35%{opacity:1;}
+  100%{opacity:0;}
+}
+
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<style id="admin-calendar-terminbuch-style">
+.adminDateField{cursor:pointer!important;color:#fff!important;text-align:center!important;-webkit-appearance:none!important;appearance:none!important;}
+.adminDateField::placeholder{color:#9a9a9f!important;opacity:1!important;}
+.adminDateOverlay{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.78);touch-action:none;}
+.adminDateOverlay.show{display:flex;}
+.adminDateBox{width:min(350px,calc(100vw - 40px));background:#1d1d1f;border-radius:26px;padding:18px 18px 17px;box-sizing:border-box;box-shadow:0 20px 55px rgba(0,0,0,.55);color:#fff;}
+.adminDateHeader{display:grid;grid-template-columns:46px minmax(0,1fr) 46px;gap:10px;align-items:center;margin-bottom:12px;}
+.adminDateTitle{text-align:center;font-size:21px;line-height:1.15;font-weight:700;color:#fff;white-space:nowrap;}
+.adminDateNav{width:46px;height:46px;border:0;border-radius:14px;background:#2c2c2e;padding:0;display:flex;align-items:center;justify-content:center;color:#fff;-webkit-tap-highlight-color:transparent;transition:filter .12s ease;}
+.adminDateNav:active{filter:brightness(1.22);}
+.adminDateNav svg{width:24px;height:24px;display:block;pointer-events:none;}
+.adminDateNav path{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.adminDateWeekdays,.adminDateGrid{width:100%;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));justify-items:center;}
+.adminDateWeekdays{margin-bottom:5px;color:#a7a7ab;font-size:13px;font-weight:600;}
+.adminDateGrid{row-gap:0;column-gap:4px;}
+.adminDateCell{width:36px;height:41px;margin:0 auto;border:0;border-radius:50%;background:transparent;color:#fff;padding:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:400;line-height:1;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+.adminDateCell.other{color:#55555a;}
+.adminDateCell.selected,.adminDateCell.today{width:33px;height:33px;min-width:33px;min-height:33px;max-width:33px;max-height:33px;align-self:center;line-height:33px;}
+.adminDateCell.selected{background:#C8CF04;color:#000;box-shadow:none;}
+.adminDateCell.today:not(.selected){background:transparent;color:#fff;box-shadow:inset 0 0 0 2px #C8CF04;}
+.adminDateActions{display:grid;grid-template-columns:minmax(0,1fr) 58px;gap:26px;align-items:center;margin-top:17px;}
+.adminDateCancel{width:100%;max-width:230px;height:46px;border:0;border-radius:14px;background:#2c2c2e;color:#fff;padding:0;font-size:18px;font-weight:400;justify-self:start;transition:filter .12s ease;}
+.adminDateOk{width:58px;height:58px;border:0;border-radius:50%;background:#C8CF04;color:#000;padding:0;justify-self:end;position:relative;font-size:0;transition:filter .12s ease;}
+.adminDateOk::before{content:"✓";font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;font-size:30px;font-weight:300;color:#000;line-height:1;}
+.adminDateCancel:active,.adminDateOk:active{filter:brightness(1.22);}
+@media(max-width:390px){.adminDateBox{padding-left:14px;padding-right:14px}.adminDateCell{font-size:17px}}
+</style>
+
+<style id="header-gap-fix">
+.adminContent,.content,.main-content{padding-top:5px !important;}
+.quittungen-card,.receipts-card,#quittungenCard{
+margin-top:-5px !important;
+}
+</style>
+</head>
+<body class="auth-loading">
+
+<div id="loginLock" class="loginLock">
+  <div class="loginBox">
+    <img src="logo.png" class="loginLogo" alt="MR BEAUTY">
+    <div class="loginCard">
+      <h1 class="loginTitle">Admin</h1>
+      <label class="loginLabel" for="loginEmail">E-Mail</label>
+      <div class="loginFieldWrap"><input id="loginEmail" class="loginInput" type="email" inputmode="email" autocomplete="username" placeholder="Deine E-Mail"></div>
+      <label class="loginLabel" for="loginPassword">Passwort</label>
+      <div class="loginFieldWrap">
+        <input id="loginPassword" class="loginInput" type="password" autocomplete="current-password" placeholder="Dein Passwort">
+        <button type="button" class="loginEye" onclick="toggleLoginPassword()" aria-label="Passwort anzeigen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1.8 12s3.8-6 10.2-6 10.2 6 10.2 6-3.8 6-10.2 6S1.8 12 1.8 12z"></path><circle cx="12" cy="12" r="3"></circle><path d="M4 20L20 4"></path></svg>
+        </button>
+      </div>
+      <div class="loginRow">
+        <button type="button" class="forgotBtn" onclick="forgotPassword()">Passwort vergessen?</button>
+        <div id="forgotMsg" class="forgotMsg"></div>
+        <button type="button" id="rememberBox" class="rememberBox" onclick="toggleRemember()"><span>Eingeloggt bleiben</span><span class="rememberCheck">✓</span></button>
+      </div>
+      <button type="button" id="loginBtn" class="loginBtn" onclick="loginWithFirebase()">Einloggen</button>
+    </div>
+    <div class="loginHint"><span class="loginShield"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span><span>Nur autorisierte Personen haben Zugriff.</span></div>
+  </div>
+</div>
+
+<div class="appShell">
+  <div class="adminTop">
+    <div class="adminHeader">
+      <button id="logoutBtn" class="logoutBtn" onclick="logoutFirebase()">Abmelden</button>
+      <div class="adminTitle">Admin</div>
+      <img src="logo.png" class="adminLogo" alt="MR BEAUTY">
+    </div>
+  </div>
+  <main class="adminContent">
+    <div class="adminGrid">
+<section class="card wide">
+        <h2 class="cardTitle">Quittungen</h2>
+        <p class="cardSub">Übersicht aller Bar-Quittungen.</p>
+        <div class="searchFullRow">
+          <input id="searchInput" class="field" placeholder="Suche: BAR-Nr. / Name" oninput="renderReceipts()">
+        </div>
+        <div class="filterDropdownRow">
+          <div class="statusDropdownWrap">
+            <input type="hidden" id="statusFilter" value="all">
+            <button type="button" id="statusDropdownBtn" class="field statusDropdownBtn" onclick="toggleStatusDropdown()">Alle Status<span class="statusArrow"></span></button>
+            <div id="statusDropdownMenu" class="statusDropdownMenu">
+              <button type="button" onclick="selectStatusFilter('all','Alle Status','white')">Alle Status</button>
+              <button type="button" onclick="selectStatusFilter('paid','Bezahlt','#2FAF54')"><span style="color:#2FAF54">Bezahlt</span></button>
+              <button type="button" onclick="selectStatusFilter('cancelled','Storniert','#ff4f4f')"><span style="color:#ff4f4f">Storniert</span></button>
+            </div>
+          </div>
+          <div class="periodDropdownWrap">
+            <input type="hidden" id="periodFilter" value="all">
+            <button type="button" id="periodDropdownBtn" class="field periodDropdownBtn" onclick="togglePeriodDropdown()">
+              Zeitraum
+              <span class="periodArrow"></span>
+            </button>
+            <div id="periodDropdownMenu" class="periodDropdownMenu">
+              <button type="button" onclick="selectPeriodFilter('all','Zeitraum')">Alle</button>
+              <button type="button" onclick="selectPeriodFilter('today','Heute')">Heute</button>
+              <button type="button" onclick="selectPeriodFilter('week','Diese Woche')">Diese Woche</button>
+              <button type="button" onclick="selectPeriodFilter('month','Dieser Monat')">Dieser Monat</button>
+              <button type="button" onclick="selectPeriodFilter('year','Dieses Jahr')">Dieses Jahr</button>
+            </div>
+          </div>
+        </div>
+        <div class="dateRangeRow">
+          <input id="dateFrom" class="field adminDateField" type="text" inputmode="none" readonly placeholder="Von" data-iso="" onclick="openAdminDatePicker('dateFrom')">
+          <input id="dateTo" class="field adminDateField" type="text" inputmode="none" readonly placeholder="Bis" data-iso="" onclick="openAdminDatePicker('dateTo')">
+        </div>
+        <button class="actionBtn" onclick="loadReceipts()">Quittungen aktualisieren</button>
+        <div class="downloadRow">
+          <button type="button" class="downloadBtn" onclick="exportReceiptsExcel()">Excel download</button>
+          <button type="button" class="downloadBtn" onclick="exportReceiptsPdf()">PDF download</button>
+        </div>
+        <div id="receiptsBox" class="receiptsList" style="margin-top:12px"><div class="empty">Noch keine Daten geladen.</div></div>
+      </section>
+</div>
+  </main>
+</div>
+<div id="adminDateOverlay" class="adminDateOverlay" aria-hidden="true">
+  <div class="adminDateBox" role="dialog" aria-modal="true" aria-label="Datum auswählen">
+    <div class="adminDateHeader">
+      <button type="button" class="adminDateNav" onclick="adminDatePrev()" aria-label="Vorheriger Monat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5L8 12L15 19"></path></svg></button>
+      <div id="adminDateTitle" class="adminDateTitle">Monat</div>
+      <button type="button" class="adminDateNav" onclick="adminDateNext()" aria-label="Nächster Monat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5L16 12L9 19"></path></svg></button>
+    </div>
+    <div class="adminDateWeekdays"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
+    <div id="adminDateGrid" class="adminDateGrid"></div>
+    <div class="adminDateActions">
+      <button type="button" class="adminDateCancel" onclick="closeAdminDatePicker()">Abbrechen</button>
+      <button type="button" class="adminDateOk" onclick="confirmAdminDatePicker()" aria-label="Übernehmen"></button>
+    </div>
+  </div>
+</div>
+<div id="infoOverlay" class="infoOverlay">
+  <div class="infoModal" onclick="event.stopPropagation()">
+    <h3 class="infoModalTitle">Quittung Info</h3>
+    <div id="infoModalBody"></div>
+    <button type="button" class="actionBtn" style="margin-top:10px;background:#fff!important;color:#000!important" onclick="openOriginalReceipt()">Quittung öffnen</button>
+<button type="button" id="cancelBtn" class="actionBtn" style="margin-top:8px;background:#fff!important;color:#000!important" onclick="cancelCurrentReceipt()">Stornieren</button>
+<button type="button" id="restoreBtn" class="actionBtn" style="margin-top:8px;display:none;background:#ff4f4f!important;color:#fff!important;align-items:center!important;justify-content:center!important;line-height:46px!important;padding:0!important;text-align:center!important" onclick="restoreCurrentReceipt()">Stornierung aufheben</button>
+<button type="button" class="infoClose" onclick="closeInfoModal()">Schliessen</button>
+  </div>
+</div>
+
+<script>
+const firebaseConfig={
+  apiKey:"AIzaSyBeUdo8xgLdwdMh-t2RU5z37Z6LIeZsXTQ",
+  authDomain:"mr-beauty-apps.firebaseapp.com",
+  projectId:"mr-beauty-apps",
+  storageBucket:"mr-beauty-apps.firebasestorage.app",
+  messagingSenderId:"470222444902",
+  appId:"1:470222444902:web:5671f2d6d4eadd57ca90a7"
+};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const storage=firebase.storage();
+const db=firebase.firestore();
+let rememberLogin=localStorage.getItem("mrbeauty_admin_remember")!=="0";
+let receipts=[];
+let currentReceiptId=null;
+
+function applyRememberUI(){const box=document.getElementById("rememberBox");if(box)box.classList.toggle("off",!rememberLogin)}
+function toggleRemember(){rememberLogin=!rememberLogin;localStorage.setItem("mrbeauty_admin_remember",rememberLogin?"1":"0");applyRememberUI()}
+function showForgotMsg(t){const m=document.getElementById("forgotMsg");if(!m)return;m.textContent=t;m.classList.add("show")}
+function hideForgotMsg(){const m=document.getElementById("forgotMsg");if(!m)return;m.textContent="";m.classList.remove("show")}
+function clearLoginInvalidFields(){document.querySelectorAll(".loginFieldWrap").forEach(x=>x.classList.remove("loginInvalid"))}
+function markMissingLoginFields(email,pass){const e=document.getElementById("loginEmail")?.closest(".loginFieldWrap");const p=document.getElementById("loginPassword")?.closest(".loginFieldWrap");if(e)e.classList.toggle("loginInvalid",!email);if(p)p.classList.toggle("loginInvalid",!pass)}
+function toggleLoginPassword(){const p=document.getElementById("loginPassword");const btn=document.querySelector(".loginEye");if(!p)return;const show=p.type==="password";p.type=show?"text":"password";if(btn)btn.innerHTML=show?'<svg viewBox="0 0 24 24"><path d="M1.8 12s3.8-6 10.2-6 10.2 6 10.2 6-3.8 6-10.2 6S1.8 12 1.8 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>':'<svg viewBox="0 0 24 24"><path d="M1.8 12s3.8-6 10.2-6 10.2 6 10.2 6-3.8 6-10.2 6S1.8 12 1.8 12z"></path><circle cx="12" cy="12" r="3"></circle><path d="M4 20L20 4"></path></svg>'}
+async function loginWithFirebase(){hideForgotMsg();clearLoginInvalidFields();const btn=document.getElementById("loginBtn");if(btn)btn.classList.add("loading");const email=document.getElementById("loginEmail").value.trim();const pass=document.getElementById("loginPassword").value;if(!email||!pass){if(btn)btn.classList.remove("loading");markMissingLoginFields(email,pass);return}try{await auth.setPersistence(rememberLogin?firebase.auth.Auth.Persistence.LOCAL:firebase.auth.Auth.Persistence.SESSION);await auth.signInWithEmailAndPassword(email,pass)}catch(e){showForgotMsg("Login nicht möglich. Bitte E-Mail und Passwort prüfen.")}finally{if(btn)btn.classList.remove("loading")}}
+async function forgotPassword(){hideForgotMsg();const email=document.getElementById("loginEmail").value.trim();if(!email){showForgotMsg("Bitte zuerst deine E-Mail-Adresse eingeben.");return}try{await auth.sendPasswordResetEmail(email);showForgotMsg("E-Mail zum Zurücksetzen wurde gesendet.")}catch(e){showForgotMsg("E-Mail konnte nicht gesendet werden. Bitte Adresse prüfen.")}}
+async function logoutFirebase(){await auth.signOut()}
+function showLoginOnly(){document.body.classList.remove("auth-loading","logged-in");document.body.classList.add("logged-out")}
+function showAppAfterLogin(){document.body.classList.remove("auth-loading","logged-out");document.body.classList.add("logged-in");loadReceipts()}
+auth.onAuthStateChanged(user=>user?showAppAfterLogin():showLoginOnly());
+document.addEventListener("DOMContentLoaded",()=>{applyRememberUI();["loginEmail","loginPassword"].forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener("input",()=>{hideForgotMsg();clearLoginInvalidFields()});el.addEventListener("keydown",e=>{if(e.key==="Enter")loginWithFirebase()})}})});
+
+
+let visibleCount=20;
+let activeDateRange="all";
+function parseReceiptDate(r){
+  const raw=String(r.date||"").trim();
+  const m=raw.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if(m)return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));
+  if(r.createdAt&&r.createdAt.toDate)return r.createdAt.toDate();
+  return null;
+}
+function startOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+function endOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59,999)}
+function toInputDate(d){
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,"0");
+  const day=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function setPeriodDropdownLabel(label){
+  const btn=document.getElementById("periodDropdownBtn");
+  if(btn)btn.childNodes[0].nodeValue=label+" ";
+}
+function setDateRange(range){
+  activeDateRange=range;
+  visibleCount=20;
+
+  const hidden=document.getElementById("periodFilter");
+  if(hidden)hidden.value=range;
+
+  const from=document.getElementById("dateFrom");
+  const to=document.getElementById("dateTo");
+  const now=new Date();
+  let a=null,b=null;
+
+  if(range==="today"){
+    a=startOfDay(now);
+    b=endOfDay(now);
+  }
+  if(range==="week"){
+    const day=(now.getDay()+6)%7;
+    a=startOfDay(new Date(now.getFullYear(),now.getMonth(),now.getDate()-day));
+    b=endOfDay(now);
+  }
+  if(range==="month"){
+    a=new Date(now.getFullYear(),now.getMonth(),1);
+    b=endOfDay(now);
+  }
+  if(range==="year"){
+    a=new Date(now.getFullYear(),0,1);
+    b=endOfDay(now);
+  }
+  if(range==="all"){
+    if(from)setAdminDateInput(from,"");
+    if(to)setAdminDateInput(to,"");
+  }
+  if(a&&b&&from&&to){
+    setAdminDateInput(from,toInputDate(a));
+    setAdminDateInput(to,toInputDate(b));
+  }
+  renderReceipts();
+}
+function togglePeriodDropdown(){
+  const menu=document.getElementById("periodDropdownMenu");
+  if(menu)menu.classList.toggle("show");
+}
+function selectPeriodFilter(range,label){
+  setPeriodDropdownLabel(range==="all"?"Zeitraum":label);
+  const menu=document.getElementById("periodDropdownMenu");
+  if(menu)menu.classList.remove("show");
+  setDateRange(range);
+}
+function dateMatches(r){
+  const fromVal=getAdminDateValue("dateFrom");
+  const toVal=getAdminDateValue("dateTo");
+  if(!fromVal&&!toVal)return true;
+  const d=parseReceiptDate(r);
+  if(!d)return false;
+  const day=startOfDay(d).getTime();
+  if(fromVal&&day<startOfDay(new Date(fromVal+"T00:00:00")).getTime())return false;
+  if(toVal&&day>endOfDay(new Date(toVal+"T00:00:00")).getTime())return false;
+  return true;
+}
+function loadMoreReceipts(){
+  visibleCount+=20;
+  renderReceipts(false);
+}
+
+function money(v){return "CHF "+Number(v||0).toFixed(2)}
+function moneyHtml(v){return `<span class="rCurrency">CHF</span><span class="rValue">${Number(v||0).toFixed(2)}</span>`}
+function tsSortValue(d){const c=d.createdAt;return c&&c.toMillis?c.toMillis():0}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]))}
+function serviceCodeText(r){
+  if(Array.isArray(r.serviceNumbers)&&r.serviceNumbers.length)return r.serviceNumbers.join("+");
+  if(r.serviceCodes)return String(r.serviceCodes);
+  if(Array.isArray(r.items))return r.items.map(i=>i?.serviceNumber??i?.number).filter(v=>v!==undefined&&v!==null&&v!=="").join("+");
+  return "-";
+}
+function statusText(r){return (r.status||"paid")==="cancelled"?"Storniert":"Bezahlt"}
+async function loadReceipts(){const box=document.getElementById("receiptsBox");box.innerHTML='<div class="loadingText">Lade Quittungen...</div>';try{const snap=await db.collection("test_kasse_receipts").orderBy("createdAt","desc").limit(500).get();receipts=snap.docs.map(doc=>({id:doc.id,...doc.data()}));renderReceipts()}catch(e){box.innerHTML='<div class="empty">Quittungen konnten nicht geladen werden. Firestore-Regeln/Login prüfen.</div>'}}
+function renderReceipts(resetVisible=true){if(resetVisible)visibleCount=20;const box=document.getElementById("receiptsBox");const q=(document.getElementById("searchInput")?.value||"").toLowerCase().trim();let status=document.getElementById("statusFilter")?.value||"all";if(status==="status")status="all";let list=receipts.slice().sort((a,b)=>tsSortValue(b)-tsSortValue(a));if(status!=="all")list=list.filter(r=>(r.status||"paid")===status);list=list.filter(dateMatches);if(q)list=list.filter(r=>[r.id,r.receiptNumber,r.customerName,serviceCodeText(r),r.payment].join(" ").toLowerCase().includes(q));if(!list.length){box.innerHTML='<div class="empty">Keine passenden Quittungen gefunden.</div>';return}const total=list.length;const shown=list.slice(0,visibleCount);box.innerHTML=shown.map(r=>`<div class="receiptItem"><div><div class="rNumber">${esc(r.receiptNumber||r.id)}</div><div class="rMeta">${esc(r.date||"")} / ${esc(r.time||"")}<br>${esc(r.customerName||"")}<br>Anzahl Leistungen: ${esc(r.serviceCount??(Array.isArray(r.items)?r.items.length:"-"))}<br><span class="rStatusLine">Status: <span class="${(r.status||"paid")==="cancelled"?"rStatusValueCancelled":"rStatusValuePaid"}">${statusText(r)}</span></span></div></div><div class="receiptRight"><div class="rAmount">${moneyHtml(r.total)}</div><button type="button" class="infoBtn" onclick="openReceipt('${esc(r.id)}')">Info</button></div></div>`).join("")+`<div class="countText">${Math.min(visibleCount,total)} von ${total} Belegen angezeigt</div>`+(visibleCount<total?`<button type="button" class="moreBtn" onclick="loadMoreReceipts()">Mehr laden (20)</button>`:"")}
+function openReceipt(id){currentReceiptId=id;const r=receipts.find(x=>x.id===id);if(!r)return;const cancelBtn=document.getElementById("cancelBtn");const restoreBtn=document.getElementById("restoreBtn");if(cancelBtn)cancelBtn.style.display=(r.status||"paid")==="cancelled"?"none":"block";if(restoreBtn)restoreBtn.style.display=(r.status||"paid")==="cancelled"?"flex":"none";const body=document.getElementById("infoModalBody");body.innerHTML=`
+  <div class="infoRow"><div class="infoLabel">Quittung Nr.:</div><div class="infoValue">${esc(r.receiptNumber||r.id)}</div></div>
+  <div class="infoRow"><div class="infoLabel">Kundin:</div><div class="infoValue">${esc(r.customerName||"")}</div></div>
+  <div class="infoRow"><div class="infoLabel">Datum:</div><div class="infoValue">${esc(r.date||"")}</div></div>
+  <div class="infoRow"><div class="infoLabel">Uhrzeit:</div><div class="infoValue">${esc(r.time||"")}</div></div>
+  <div class="infoRow"><div class="infoLabel">Tarif:</div><div class="infoValue">${esc(r.tariff || "Standard")}</div></div>
+  <div class="infoRow"><div class="infoLabel">Leistungen:</div><div class="infoValue">${esc(serviceCodeText(r))}</div></div>
+  <div class="infoRow"><div class="infoLabel">Betrag:</div><div class="infoValue">${money(r.total)}</div></div>
+  <div class="infoRow"><div class="infoLabel">Status:</div><div class="infoValue">${(r.status||"paid")==="cancelled"?'<span style="color:#ff4f4f;font-weight:700">Storniert</span>':'<span style="color:#2FAF54;font-weight:700">Bezahlt</span>'}</div></div>
+  ${(r.status||"paid")==="cancelled" && (r.cancellationReason||r.cancelReason||r.stornoReason)?`<div class="infoRow"><div class="infoLabel">Bemerkung:</div><div class="infoValue">${esc(r.cancellationReason||r.cancelReason||r.stornoReason)}</div></div>`:""}`;document.getElementById("infoOverlay").classList.add("show")}
+
+function currentReceipt(){return receipts.find(x=>x.id===currentReceiptId);}
+function receiptPlainText(r){
+  return `MR Beauty Vlora Iseni\n\nQuittung Nr.: ${r.receiptNumber||r.id}\nKundin: ${r.customerName||""}\nDatum: ${r.date||""}\nUhrzeit: ${r.time||""}\nTarif: ${r.tariff||"Standard"}\nLeistungen: ${serviceCodeText(r)}\nBetrag: ${money(r.total)}\nStatus: ${statusText(r)}`;
+}
+function originalReceiptHtml(r){
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quittung ${esc(r.receiptNumber||r.id)}</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:#000;font-family:MontserratLocal,Arial,sans-serif}
+.page{width:100%;max-width:760px;margin:0 auto;padding:38px 28px}
+.receipt{width:100%;border:1px solid #e5e5e5;padding:28px 22px;min-height:520px}
+h1{text-align:center;font-size:26px;margin:0 0 14px;font-weight:700}
+.sub{text-align:center;font-size:13px;line-height:1.35;margin-bottom:24px;color:#333}
+.row{display:grid;grid-template-columns:130px 1fr;gap:12px;font-size:15px;line-height:1.4;margin:7px 0}
+.label{font-weight:700}
+.value{overflow-wrap:anywhere}
+.line{border-top:1px solid #ddd;margin:18px 0}
+.total{text-align:right;font-size:21px;font-weight:700;margin-top:10px}
+.actions{display:flex;gap:10px;margin:18px auto 0;max-width:760px;padding:0 28px 28px}
+button{flex:1;height:44px;border:0;border-radius:12px;background:#C8CF04;color:#000;font-size:14px;font-weight:700}
+@media print{
+  @page{size:A4;margin:12mm}
+  .actions{display:none!important}
+  .page{max-width:none;margin:0;padding:0}
+  .receipt{border:0;min-height:auto;padding:0}
+}
+</style>
+
+<style id="header-gap-fix">
+.adminContent,.content,.main-content{padding-top:5px !important;}
+.quittungen-card,.receipts-card,#quittungenCard{
+margin-top:-5px !important;
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="receipt">
+    <h1>MR Beauty</h1>
+    <div class="sub">Barquittung<br>MR Beauty Vlora Iseni</div>
+    <div class="row"><div class="label">Quittung Nr.:</div><div class="value">${esc(r.receiptNumber||r.id)}</div></div>
+    <div class="row"><div class="label">Kundin:</div><div class="value">${esc(r.customerName||"")}</div></div>
+    <div class="row"><div class="label">Datum:</div><div class="value">${esc(r.date||"")}</div></div>
+    <div class="row"><div class="label">Uhrzeit:</div><div class="value">${esc(r.time||"")}</div></div>
+    <div class="row"><div class="label">Tarif:</div><div class="value">${esc(r.tariff||"Standard")}</div></div>
+    <div class="row"><div class="label">Leistungen:</div><div class="value">${esc(serviceCodeText(r))}</div></div>
+    <div class="row"><div class="label">Status:</div><div class="value">${statusText(r)}</div></div>
+    <div class="line"></div>
+    <div class="total">${money(r.total)}</div>
+  </div>
+</div>
+<div class="actions">
+  <button onclick="shareWhatsapp()">WhatsApp</button>
+  <button onclick="shareEmail()">E-Mail</button>
+  <button onclick="window.print()">Drucken / PDF</button>
+  <button onclick="window.close()">Schliessen</button>
+</div>
+<script>
+const receiptText=${JSON.stringify("").replace('""','`'+ '${receiptPlainText(r).replace(/`/g,"\\`")}' +'`')};
+function shareWhatsapp(){window.open("https://wa.me/?text="+encodeURIComponent(receiptText),"_blank")}
+function shareEmail(){location.href="mailto:?subject="+encodeURIComponent("Quittung ${esc(r.receiptNumber||r.id)}")+"&body="+encodeURIComponent(receiptText)}
+<\/script>
+
+<style id="gap-match-terminbuch">
+.adminContent,
+.mainContent,
+.content{
+    padding-top:0 !important;
+}
+.card:first-child,
+.quittungen-card,
+#quittungenCard{
+    margin-top:-18px !important;
+}
+</style>
+
+</body>
+</html>`;
+}
+function isReceiptCancelled(r){
+  return (r && (r.status||"paid")==="cancelled");
+}
+
+async function stampCancelledPdfBytes(bytes){
+  if(typeof PDFLib==="undefined") throw new Error("PDFLib fehlt");
+
+  const pdf=await PDFLib.PDFDocument.load(bytes);
+
+  // stempel.png liegt im gleichen GitHub-Verzeichnis wie index.html
+  const stampRes=await fetch("stempel.png", {cache:"no-store"});
+  if(!stampRes.ok) throw new Error("stempel.png nicht gefunden");
+  const stampBytes=await stampRes.arrayBuffer();
+  const stampImage=await pdf.embedPng(stampBytes);
+
+  const pages=pdf.getPages();
+
+  pages.forEach(page=>{
+    const {width,height}=page.getSize();
+
+    // FIXE Position: immer exakt mittig zwischen linker Quittungsinfo und rechter Datum/Uhrzeit-Spalte.
+    // Nicht abhängig von Anzahl Leistungen oder Seitenhöhe.
+    const stampW=width*0.32;
+    const stampH=stampW*(stampImage.height/stampImage.width);
+
+    // FIXE POSITION VON OBEN:
+    // immer exakt zwischen linker Info-Spalte (Quittung Nr./Kundin)
+    // und rechter Info-Spalte (Datum/Uhrzeit), unabhängig von Anzahl Leistungen.
+    const x=(width-stampW)/2;
+    const topFromPage=339; // final: 1px weiter nach unten
+    const y=height-topFromPage-stampH;
+
+    page.drawImage(stampImage,{
+      x,
+      y,
+      width:stampW,
+      height:stampH,
+      opacity:0.88
+    });
+  });
+
+  return await pdf.save();
+}
+
+function openPdfBytesFixedWidth(bytes,title){
+  const blob=new Blob([bytes],{type:"application/pdf"});
+  const blobUrl=URL.createObjectURL(blob);
+  const w=window.open("","_blank");
+
+  if(!w){
+    window.open(blobUrl,"_blank");
+    setTimeout(()=>URL.revokeObjectURL(blobUrl),60000);
+    return;
+  }
+
+  const safeTitle=String(title||"Quittung").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
+  w.document.open();
+  w.document.write(`<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>${safeTitle}</title>
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;background:#111;overflow:hidden;}
+#viewer{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:#111;text-align:center;}
+canvas{display:block;width:100vw!important;height:auto!important;margin:0 auto 8px auto;background:#fff;}
+.fallback{width:100vw;height:100vh;border:0;background:#fff;}
+</style>
+
+<style id="header-gap-fix">
+.adminContent,.content,.main-content{padding-top:5px !important;}
+.quittungen-card,.receipts-card,#quittungenCard{
+margin-top:-5px !important;
+}
+</style>
+</head>
+<body>
+<div id="viewer"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"><\/script>
+<script>
+const url=${JSON.stringify(blobUrl)};
+const viewer=document.getElementById("viewer");
+async function renderPdf(){
+  try{
+    pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    const pdf=await pdfjsLib.getDocument(url).promise;
+    for(let i=1;i<=pdf.numPages;i++){
+      const page=await pdf.getPage(i);
+      const baseViewport=page.getViewport({scale:1});
+      const scale=window.innerWidth/baseViewport.width;
+      const viewport=page.getViewport({scale:scale});
+      const canvas=document.createElement("canvas");
+      const ctx=canvas.getContext("2d");
+      canvas.width=viewport.width;
+      canvas.height=viewport.height;
+      viewer.appendChild(canvas);
+      await page.render({canvasContext:ctx,viewport}).promise;
+    }
+  }catch(e){
+    
+    viewer.innerHTML='<iframe class="fallback" src="'+url+'"></iframe>';
+  }
+}
+renderPdf();
+window.addEventListener("pagehide",()=>{try{URL.revokeObjectURL(url)}catch(e){}});
+<\/script>
+
+<style id="gap-match-terminbuch">
+.adminContent,
+.mainContent,
+.content{
+    padding-top:0 !important;
+}
+.card:first-child,
+.quittungen-card,
+#quittungenCard{
+    margin-top:-18px !important;
+}
+</style>
+
+</body>
+</html>`);
+  w.document.close();
+}
+
+async function getOriginalPdfUrlForReceipt(r){
+  if(r.pdfUrl) return r.pdfUrl;
+
+  if(r.pdfStoragePath){
+    const url=await storage.ref().child(r.pdfStoragePath).getDownloadURL();
+    r.pdfUrl=url;
+    return url;
+  }
+
+  const nr=(r.receiptNumber||r.id||"").trim();
+  if(nr){
+    const path="receipts/"+nr+"/Quittung_"+nr+".pdf";
+    const url=await storage.ref().child(path).getDownloadURL();
+    r.pdfUrl=url;
+    r.pdfStoragePath=path;
+    return url;
+  }
+
+  throw new Error("Keine Quittungsnummer gefunden");
+}
+
+
+function cancelledReceiptGithubHtml(r){
+  const base=new URL('.', window.location.href).href;
+  const items=Array.isArray(r.items)?r.items:[];
+  const itemRows=items.map((it,idx)=>{
+    const name=it?.name||it?.label||it?.serviceName||('Leistung '+(idx+1));
+    const price=Number(it?.price??it?.amount??0)||0;
+    return `<div class="serviceRow"><div class="serviceName">• ${esc(name)}</div><div class="serviceCurrency">CHF</div><div class="servicePrice">${price.toFixed(2)}</div></div>`;
+  }).join('');
+  const fallbackRows=!itemRows?`<div class="serviceRow"><div class="serviceName">• ${esc(serviceCodeText(r))}</div><div class="serviceCurrency"></div><div class="servicePrice"></div></div>`:itemRows;
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<base href="${base}">
+<title>Quittung ${esc(r.receiptNumber||r.id)}</title>
+<style>
+@font-face{font-family:MontserratLocal;src:url("fonts/Montserrat-Regular.ttf") format("truetype");font-weight:400}
+@font-face{font-family:MontserratLocal;src:url("fonts/Montserrat-Bold.ttf") format("truetype");font-weight:700}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000;font-family:MontserratLocal,Arial,sans-serif;color:#000}
+.viewer{min-height:100vh;padding:28px 22px 120px;display:flex;justify-content:center;align-items:flex-start}
+.paper{position:relative;width:min(100%,780px);background:#fff;padding:34px 42px 46px}
+.logo{display:block;width:260px;max-width:52%;margin:0 auto 16px}
+.company{text-align:center;font-size:22px;line-height:1.25;margin-bottom:14px}
+.dash{border-top:2px dashed #222;margin:0 0 28px}
+.title{font-size:38px;font-weight:700;margin:0 0 30px}
+.infoGrid{display:grid;grid-template-columns:1fr 1fr;gap:22px 60px;position:relative}
+.infoBlock .label{font-size:24px;line-height:1.15}
+.infoBlock .value{font-size:24px;line-height:1.15;font-weight:700}
+.right{text-align:left}
+.stamp{position:absolute;left:50%;top:2px;transform:translateX(-50%);width:245px;max-width:34%;height:auto}
+.rule{border-top:4px solid #222;margin:28px 0 24px}
+.servicesTitle{font-size:31px;font-weight:700;margin-bottom:18px}
+.serviceRow{display:grid;grid-template-columns:1fr 62px 98px;gap:8px;align-items:baseline;font-size:23px;line-height:1.45}
+.serviceCurrency,.servicePrice{text-align:right}
+.summary{display:grid;grid-template-columns:1fr auto auto;gap:10px;font-size:23px;line-height:1.45;align-items:baseline}
+.summary .strong{font-weight:700}
+.footer{text-align:center;padding-top:8px}
+.heart{font-size:56px;color:#C8CF04;line-height:1}
+.thanks{font-family:"Segoe Script",cursive;color:#C8CF04;font-size:34px;margin:6px 0 8px}
+.footerText{font-size:20px}
+@media(max-width:600px){
+  .viewer{padding:20px 14px 90px}.paper{padding:26px 22px 36px}.logo{width:220px;max-width:58%}.company{font-size:17px}.title{font-size:29px;margin-bottom:23px}.infoGrid{gap:18px 22px}.infoBlock .label,.infoBlock .value{font-size:18px}.stamp{width:170px;max-width:36%;top:4px}.servicesTitle{font-size:24px}.serviceRow,.summary{font-size:17px}.serviceRow{grid-template-columns:1fr 48px 76px}.rule{margin:22px 0 18px;border-top-width:3px}.thanks{font-size:25px}.footerText{font-size:15px}
+}
+</style>
+</head>
+<body>
+<div class="viewer"><div class="paper">
+<img class="logo" src="logo_quittung.png" alt="MR Beauty">
+<div class="company">MR Beauty Vlora Iseni<br>Adlikerstrasse 255 | 8105 Regensdorf</div>
+<div class="dash"></div>
+<div class="title">QUITTUNG</div>
+<div class="infoGrid">
+  <div class="infoBlock"><div class="label">Quittung Nr.:</div><div class="value">${esc(r.receiptNumber||r.id)}</div></div>
+  <div class="infoBlock right"><div class="label">Datum:</div><div class="value">${esc(r.date||'')}</div></div>
+  <img class="stamp" src="stempel.png" alt="STORNIERT">
+  <div class="infoBlock"><div class="label">Kundin:</div><div class="value">${esc(r.customerName||'')}</div></div>
+  <div class="infoBlock right"><div class="label">Uhrzeit:</div><div class="value">${esc(r.time||'')}</div></div>
+</div>
+<div class="rule"></div>
+<div class="servicesTitle">Leistungen</div>
+${fallbackRows}
+<div class="rule"></div>
+<div class="summary"><div>Betrag:</div><div class="strong">CHF</div><div class="strong">${Number(r.total||0).toFixed(2)}</div></div>
+<div class="summary"><div>Zahlungsart:<br><span style="font-size:.86em">Nicht MWST-pflichtig</span></div><div></div><div class="strong">${esc(r.payment||'Barzahlung')}</div></div>
+<div class="rule"></div>
+<div class="footer"><div class="heart">♡</div><div class="thanks">Vielen Dank für Ihren Besuch!</div><div class="footerText">Wir freuen uns, Sie bald wieder begrüssen zu dürfen.</div></div>
+</div></div>
+</body></html>`;
+}
+
+function openCancelledReceiptFromGithub(r){
+  const w=window.open('', '_blank');
+  if(!w){
+    alert('Quittung konnte nicht geöffnet werden. Bitte Pop-ups erlauben.');
+    return;
+  }
+  w.document.open();
+  w.document.write(cancelledReceiptGithubHtml(r));
+  w.document.close();
+}
+
+async function openOriginalReceipt(){
+  const r=currentReceipt();if(!r)return;
+
+  // Bei stornierten Quittungen das Fenster sofort durch den Klick öffnen.
+  // Danach wird dort direkt das fertige PDF angezeigt (native PDF-Anzeige,
+  // scharf und mit normalem Schliessen-X auf dem iPhone).
+  const cancelled=isReceiptCancelled(r);
+  const pdfWindow=cancelled?window.open("about:blank","_blank"):null;
+  if(cancelled&&!pdfWindow){
+    alert("Quittung konnte nicht geöffnet werden. Bitte Pop-ups erlauben.");
+    return;
+  }
+
+  try{
+    let url="";
+
+    if(r.pdfUrl){
+      url=r.pdfUrl;
+    }else if(r.pdfStoragePath){
+      url=await storage.ref().child(r.pdfStoragePath).getDownloadURL();
+      r.pdfUrl=url;
+    }else{
+      const nr=(r.receiptNumber||r.id||"").trim();
+      if(nr){
+        const path="receipts/"+nr+"/Quittung_"+nr+".pdf";
+        url=await storage.ref().child(path).getDownloadURL();
+        r.pdfUrl=url;
+        r.pdfStoragePath=path;
+      }
+    }
+
+    if(!url){
+      alert("Für diese Quittung ist noch kein Original-PDF gespeichert. Bitte diese alte Quittung in der Kassen-App neu öffnen/speichern oder künftig neue Barzahlungen verwenden.");
+      return;
+    }
+
+    if(!cancelled){
+      window.open(url,"_blank");
+      return;
+    }
+
+    // Storniert: exakt das Original-PDF aus Firebase laden und nur temporär
+    // mit stempel.png versehen. Das Original in Firebase bleibt unverändert.
+    const res=await fetch(url,{mode:"cors",cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const originalBytes=await res.arrayBuffer();
+    const stampedBytes=await stampCancelledPdfBytes(originalBytes);
+
+    const stampedBlob=new Blob([stampedBytes],{type:"application/pdf"});
+    const stampedUrl=URL.createObjectURL(stampedBlob);
+    pdfWindow.location.replace(stampedUrl);
+    setTimeout(()=>{try{URL.revokeObjectURL(stampedUrl)}catch(e){}},120000);
+
+  }catch(err){
+    try{if(pdfWindow&&!pdfWindow.closed)pdfWindow.close()}catch(e){}
+    console.error("Stornierte Original-Quittung konnte nicht geöffnet werden:",err);
+    alert("Original-Quittung konnte nicht geöffnet werden. Bitte Firebase Storage, stempel.png und Internet prüfen.");
+  }
+}
+
+async function getOriginalReceiptUrl(r){
+  if(!r)return "";
+  if(r.pdfUrl)return r.pdfUrl;
+  if(r.pdfStoragePath){
+    const url=await storage.ref().child(r.pdfStoragePath).getDownloadURL();
+    r.pdfUrl=url;
+    return url;
+  }
+  return "";
+}
+
+async function shareOriginalReceiptFile(){
+  const r=currentReceipt();if(!r)return;
+  try{
+    const url=await getOriginalReceiptUrl(r);
+    if(!url){
+      alert("Für diese Quittung ist noch kein Original-PDF gespeichert.");
+      return;
+    }
+
+    try{
+      const response=await fetch(url, {mode:"cors"});
+      const blob=await response.blob();
+      const fileName=r.pdfFileName || ("Quittung_"+(r.receiptNumber||r.id)+".pdf");
+      const file=new File([blob], fileName, {type:"application/pdf"});
+
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({
+          files:[file],
+          title:"Quittung "+(r.receiptNumber||r.id),
+          text:"MR Beauty Vlora Iseni"
+        });
+        return;
+      }
+    }catch(fetchErr){
+      
+    }
+
+    // Sicherer Fallback: Original-PDF öffnen. Von dort kann iPhone direkt teilen/drucken.
+    window.open(url,"_blank");
+  }catch(err){
+    
+    alert("Original-Quittung konnte nicht geöffnet werden. Bitte Internet/Firebase prüfen.");
+  }
+}
+
+function shareOriginalReceiptWhatsApp(){
+  shareOriginalReceiptFile();
+}
+
+function shareOriginalReceiptEmail(){
+  shareOriginalReceiptFile();
+}
+
+
+
+async function updateCurrentReceiptStatus(newStatus){
+  const r=currentReceipt();if(!r)return;
+
+  try{
+    const updateData={
+      status:newStatus,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if(newStatus==="cancelled"){
+      updateData.cancelledAt=firebase.firestore.FieldValue.serverTimestamp();
+      updateData.restoredAt=null;
+    }else{
+      updateData.restoredAt=firebase.firestore.FieldValue.serverTimestamp();
+      updateData.cancelledAt=null;
+    }
+
+    await db.collection("test_kasse_receipts").doc(r.id).set(updateData, {merge:true});
+
+    r.status=newStatus;
+    if(newStatus==="cancelled"){
+      r.cancelledAt=new Date();
+      r.restoredAt=null;
+    }else{
+      r.restoredAt=new Date();
+      r.cancelledAt=null;
+    }
+
+    renderReceipts(false);
+    openReceipt(r.id); // Popup bleibt offen und zeigt neuen Status/Button.
+  }catch(err){
+    
+    alert("Status konnte nicht gespeichert werden. Bitte Internet/Firebase prüfen.");
+  }
+}
+async function cancelCurrentReceipt(){
+  const r=currentReceipt();
+  if(!r)return;
+
+  const reason=window.prompt("Bitte Grund der Stornierung eingeben:","");
+  if(reason===null)return;
+
+  const cleaned=String(reason).trim();
+  if(!cleaned){
+    alert("Bitte einen Grund für die Stornierung eingeben.");
+    return;
+  }
+
+  try{
+    await db.collection("test_kasse_receipts").doc(r.id).set({
+      cancellationReason:cleaned,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
+    r.cancellationReason=cleaned;
+    await updateCurrentReceiptStatus("cancelled");
+  }catch(err){
+    alert("Stornierung konnte nicht gespeichert werden. Bitte Internet/Firebase prüfen.");
+  }
+}
+function restoreCurrentReceipt(){updateCurrentReceiptStatus("paid")}
+
+function closeInfoModal(){document.getElementById("infoOverlay")?.classList.remove("show")}
+async function tryAddExcelLogo(wb,ws){
+  // Sicherer Fallback, damit die App nicht schwarz wird.
+  // Logo-Einbettung bleibt deaktiviert, bis wir sie separat sauber testen.
+  ws.getCell("A1").value = "MR Beauty Vlora Iseni";
+  ws.getCell("A1").font = {bold:true, size:18};
+  ws.getCell("A1").alignment = {vertical:"middle", horizontal:"left"};
+  return false;
+}
+
+
+async function exportReceiptsExcel(){
+  const excelBtn = document.querySelector('button[onclick="exportReceiptsExcel()"]');
+  const oldText = excelBtn ? excelBtn.textContent : "";
+
+  if(excelBtn){
+    excelBtn.disabled = true;
+    excelBtn.textContent = "Excel wird erstellt...";
+    excelBtn.style.opacity = ".72";
+    excelBtn.style.pointerEvents = "none";
+  }
+
+  try{
+    await new Promise(resolve=>setTimeout(resolve,120));
+
+    const ok = await ensureReceiptsForPdfDownload();
+    if(!ok) return;
+
+    const list = getPdfDownloadReceiptList();
+    if(!list.length){
+      alert("Keine passenden Quittungen für den Excel-Download gefunden.");
+      return;
+    }
+
+    if(typeof ExcelJS === "undefined"){
+      alert("Excel-Funktion konnte nicht geladen werden. Bitte Internet prüfen.");
+      return;
+    }
+
+    const wb = new ExcelJS.Workbook();
+    wb.creator = "MR Beauty";
+    wb.created = new Date();
+
+    const ws = wb.addWorksheet("Barzahlungen");
+    ws.views = [{showGridLines:false, state:"frozen", ySplit:4}];
+
+    ws.columns = [
+      {width:15}, // Quittung Nr.
+      {width:12}, // Datum
+      {width:9},  // Zeit
+      {width:70}, // Ihre Referenz
+      {width:18}, // Anzahl Leistungen
+      {width:15}, // Bruttobetrag
+      {width:24}, // Eingelieferte Währung
+      {width:13}, // Status
+      {width:14}  // Brand
+    ];
+
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2,"0");
+    const mm = String(now.getMonth()+1).padStart(2,"0");
+    const yyyy = now.getFullYear();
+    const createdDate = dd+"."+mm+"."+yyyy;
+
+    // Kompakter Kopf ohne Logo-Experiment.
+    ws.getCell("A1").value = "MR Beauty Vlora Iseni";
+    ws.getCell("A1").font = {bold:true, size:18};
+    ws.getCell("A1").alignment = {vertical:"middle", horizontal:"left"};
+    ws.getRow(1).height = 24;
+
+    ws.getCell("A2").value = "Barzahlungen";
+    ws.getCell("A2").font = {bold:true, size:16};
+    ws.getCell("A2").alignment = {vertical:"middle", horizontal:"left"};
+    ws.getRow(2).height = 22;
+
+    ws.getCell("A3").value = "Erstelldatum:";
+    ws.getCell("A3").font = {bold:true};
+    ws.getCell("B3").value = createdDate;
+    ws.getRow(3).height = 18;
+
+    const headerRow = 4;
+    const headers = [
+      "Quittung Nr.",
+      "Datum",
+      "Zeit",
+      "Ihre Referenz",
+      "Anzahl Leistungen",
+      "Bruttobetrag",
+      "Eingelieferte Währung",
+      "Status",
+      "Brand"
+    ];
+
+    ws.getRow(headerRow).values = headers;
+    ws.getRow(headerRow).height = 24;
+
+    ws.getRow(headerRow).eachCell(cell=>{
+      cell.font = {bold:true};
+      cell.fill = {type:"pattern", pattern:"solid", fgColor:{argb:"FFEDEDED"}};
+      cell.border = {
+        top:{style:"thin", color:{argb:"FFBFBFBF"}},
+        bottom:{style:"thin", color:{argb:"FFBFBFBF"}},
+        left:{style:"thin", color:{argb:"FFD9D9D9"}},
+        right:{style:"thin", color:{argb:"FFD9D9D9"}}
+      };
+      cell.alignment = {vertical:"middle", wrapText:false};
+    });
+
+    ws.getRow(headerRow).getCell(5).alignment = {vertical:"middle", horizontal:"left", wrapText:true};
+    ws.getRow(headerRow).getCell(6).alignment = {vertical:"middle", horizontal:"right", wrapText:true};
+    ws.getRow(headerRow).getCell(7).alignment = {vertical:"middle", horizontal:"left", wrapText:true};
+
+    let rowIndex = headerRow + 1;
+
+    list.forEach(r=>{
+      const items = Array.isArray(r.items) ? r.items : [];
+      const serviceNumbers = items
+        .map(i => i && (i.serviceNumber !== undefined ? i.serviceNumber : i.number))
+        .filter(v => v !== undefined && v !== null && v !== "")
+        .join("+") || serviceCodeText(r);
+
+      const status = (r.status || "paid") === "cancelled" ? "Storno" : "Ausbezahlt";
+      const amount = Number(r.total || 0);
+
+      const tariff = r.tariff || "Standard";
+      const tariffShort = tariff === "Lehrling" ? "L" : "S";
+      const referenz = [r.customerName || "", tariffShort, serviceNumbers || ""]
+        .filter(Boolean)
+        .join(", ");
+
+      const row = ws.getRow(rowIndex);
+      row.values = [
+        r.receiptNumber || r.id || "",
+        r.date || "",
+        r.time || "",
+        referenz,
+        r.serviceCount !== undefined ? r.serviceCount : items.length,
+        amount,
+        "CHF",
+        status,
+        r.payment || "Barzahlung"
+      ];
+
+      row.getCell(6).numFmt = '#,##0.00';
+
+      // Keine Zeilenumbrüche: jede Quittung bleibt genau 1 Zeile.
+      row.height = 22;
+
+      row.eachCell(cell=>{
+        cell.alignment = {vertical:"middle", wrapText:false, shrinkToFit:false};
+        cell.border = {bottom:{style:"thin", color:{argb:"FFE5E5E5"}}};
+      });
+
+      row.getCell(5).alignment = {vertical:"middle", horizontal:"left", wrapText:false};
+      row.getCell(6).alignment = {vertical:"middle", horizontal:"right", wrapText:false};
+      row.getCell(7).alignment = {vertical:"middle", horizontal:"left", wrapText:false};
+
+      rowIndex++;
+    });
+
+    ws.autoFilter = {
+      from: {row: headerRow, column: 1},
+      to: {row: Math.max(headerRow, rowIndex-1), column: 9}
+    };
+
+    ws.pageSetup = {
+      orientation: "landscape",
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 0
+    };
+
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "MR_Beauty_Barzahlungen_"+yyyy+"-"+mm+"-"+dd+".xlsx";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+
+  }catch(e){
+    
+    alert("Excel konnte nicht erstellt werden.");
+  }finally{
+    if(excelBtn){
+      excelBtn.disabled = false;
+      excelBtn.textContent = oldText || "Excel download";
+      excelBtn.style.opacity = "";
+      excelBtn.style.pointerEvents = "";
+    }
+  }
+}
+
+
+async function ensureReceiptsForPdfDownload(){
+  if(receipts && receipts.length) return true;
+  try{
+    const snap=await db.collection("test_kasse_receipts").orderBy("createdAt","desc").limit(500).get();
+    receipts=snap.docs.map(doc=>({id:doc.id,...doc.data()}));
+    return true;
+  }catch(e){
+    
+    alert("Quittungen konnten nicht geladen werden. Bitte Internet/Firebase prüfen.");
+    return false;
+  }
+}
+
+function getPdfDownloadReceiptList(){
+  const q=(document.getElementById("searchInput")?.value||"").toLowerCase().trim();
+  let status=document.getElementById("statusFilter")?.value||"all";
+  if(status==="status")status="all";
+
+  let list=(receipts||[]).slice().sort((a,b)=>tsSortValue(b)-tsSortValue(a));
+  if(status!=="all") list=list.filter(r=>(r.status||"paid")===status);
+  list=list.filter(dateMatches);
+  if(q) list=list.filter(r=>[r.id,r.receiptNumber,r.customerName,serviceCodeText(r),r.payment].join(" ").toLowerCase().includes(q));
+  return list;
+}
+
+async function getOriginalPdfBytesByReceiptNumber(nr){
+  const path="receipts/"+nr+"/Quittung_"+nr+".pdf";
+
+  // WICHTIG: gleicher Firebase-Storage-Weg wie Quittung öffnen, aber mit festem Original-Pfad.
+  const url=await storage.ref().child(path).getDownloadURL();
+
+  const res=await fetch(url,{mode:"cors"});
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  return await res.arrayBuffer();
+}
+
+function saveMergedOriginalPdf(bytes,fileName){
+  const blob=new Blob([bytes],{type:"application/pdf"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+
+async function exportReceiptsPdf(){
+  const pdfBtn = document.querySelector('button[onclick="exportReceiptsPdf()"]');
+  const oldText = pdfBtn ? pdfBtn.textContent : "";
+
+  if(pdfBtn){
+    pdfBtn.disabled = true;
+    pdfBtn.textContent = "PDF wird erstellt...";
+    pdfBtn.style.opacity = ".72";
+    pdfBtn.style.pointerEvents = "none";
+  }
+
+  try{
+    await new Promise(resolve=>setTimeout(resolve,120));
+
+    const ok=await ensureReceiptsForPdfDownload();
+    if(!ok)return;
+
+    const list=getPdfDownloadReceiptList();
+    if(!list.length){
+      alert("Keine passenden Quittungen gefunden.");
+      return;
+    }
+
+    if(typeof PDFLib==="undefined"){
+      alert("PDF-Zusammenführen konnte nicht geladen werden. Bitte Internet prüfen.");
+      return;
+    }
+
+    const pdfResults = await Promise.all(list.map(async r=>{
+      const nr=(r.receiptNumber||r.id||"").trim();
+      if(!nr) return {nr:"", ok:false};
+
+      try{
+        let bytes=await getOriginalPdfBytesByReceiptNumber(nr);
+        if(isReceiptCancelled(r)){
+          bytes=await stampCancelledPdfBytes(bytes);
+        }
+        return {nr, ok:true, bytes};
+      }catch(e){
+        
+        return {nr, ok:false};
+      }
+    }));
+
+    const merged=await PDFLib.PDFDocument.create();
+    const failed=[];
+    let added=0;
+
+    for(const item of pdfResults){
+      if(!item.nr) continue;
+
+      if(!item.ok || !item.bytes){
+        failed.push(item.nr);
+        continue;
+      }
+
+      try{
+        const pdf=await PDFLib.PDFDocument.load(item.bytes);
+        const pages=await merged.copyPages(pdf,pdf.getPageIndices());
+        pages.forEach(p=>merged.addPage(p));
+        added++;
+      }catch(e){
+        
+        failed.push(item.nr);
+      }
+    }
+
+    if(!added){
+      alert("Es wurde kein Original-PDF gefunden oder gelesen.\nBeispiel-Pfad: receipts/BAR-00003/Quittung_BAR-00003.pdf");
+      return;
+    }
+
+    const out=await merged.save();
+    saveMergedOriginalPdf(out,"Original_Quittungen_"+new Date().toISOString().slice(0,10)+".pdf");
+
+    if(failed.length){
+      alert("PDF erstellt. Nicht eingefügt: "+failed.join(", "));
+    }
+  }catch(e){
+    
+    alert("Original-PDFs konnten nicht zusammengeführt werden.");
+  }finally{
+    if(pdfBtn){
+      pdfBtn.disabled = false;
+      pdfBtn.textContent = oldText || "PDF download";
+      pdfBtn.style.opacity = "";
+      pdfBtn.style.pointerEvents = "";
+    }
+  }
+}
+
+function toggleStatusDropdown(){
+  const m=document.getElementById("statusDropdownMenu");
+  if(m)m.classList.toggle("show");
+}
+function selectStatusFilter(value,label,color){
+  const input=document.getElementById("statusFilter");
+  const btn=document.getElementById("statusDropdownBtn");
+  const menu=document.getElementById("statusDropdownMenu");
+  if(input)input.value=value;
+  if(btn){
+    const txt=(value==="all")?"Alle Status":label;
+    const c=(value==="paid")?"#2FAF54":(value==="cancelled")?"#ff4f4f":"#fff";
+    btn.innerHTML='<span style="color:'+c+'">'+txt+'</span><span class="statusArrow"></span>';
+  }
+  if(menu)menu.classList.remove("show");
+  renderReceipts();
+}
+document.addEventListener("click",function(e){
+  const wrap=e.target.closest(".statusDropdownWrap");
+  if(!wrap){
+    const menu=document.getElementById("statusDropdownMenu");
+    if(menu)menu.classList.remove("show");
+  }
+});
+
+
+/* Einheitlicher Button-Blink wie Kassen-App */
+(function(){
+  function mrButtonBlink(btn){
+    if(!btn)return;
+    btn.classList.remove("mrBtnBlink");
+    void btn.offsetWidth;
+    btn.classList.add("mrBtnBlink");
+    setTimeout(function(){btn.classList.remove("mrBtnBlink");},200);
+  }
+
+  document.addEventListener("touchstart",function(e){
+    var btn=e.target.closest(".actionBtn,.downloadBtn,.infoBtn,.infoClose,.logoutBtn");
+    if(btn)mrButtonBlink(btn);
+  },{passive:true});
+
+  document.addEventListener("mousedown",function(e){
+    var btn=e.target.closest(".actionBtn,.downloadBtn,.infoBtn,.infoClose,.logoutBtn");
+    if(btn)mrButtonBlink(btn);
+  },true);
+})();
+
+</script>
+<script id="admin-calendar-terminbuch-js">
+let adminDateTargetId=null;
+let adminDateTemp=null;
+let adminDateView=null;
+function adminDateTodayString(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function adminDateMonthName(d){return d.toLocaleDateString("de-CH",{month:"long",year:"numeric"}).replace(/^./,c=>c.toUpperCase());}
+function adminDateDisplay(iso){if(!iso)return "";const m=String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?m[3]+"."+m[2]+"."+m[1]:iso;}
+function setAdminDateInput(inputOrId,iso){const el=typeof inputOrId==="string"?document.getElementById(inputOrId):inputOrId;if(!el)return;el.dataset.iso=iso||"";el.value=adminDateDisplay(iso||"");}
+function getAdminDateValue(id){const el=document.getElementById(id);return el?(el.dataset.iso||""):"";}
+function openAdminDatePicker(id){adminDateTargetId=id;const current=getAdminDateValue(id)||adminDateTodayString();adminDateTemp=current;adminDateView=new Date(current+"T12:00:00");const overlay=document.getElementById("adminDateOverlay");overlay.classList.add("show");overlay.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderAdminDatePicker();}
+function closeAdminDatePicker(){const overlay=document.getElementById("adminDateOverlay");overlay.classList.remove("show");overlay.setAttribute("aria-hidden","true");document.body.style.overflow="";}
+function adminDatePrev(){adminDateView.setMonth(adminDateView.getMonth()-1);renderAdminDatePicker();}
+function adminDateNext(){adminDateView.setMonth(adminDateView.getMonth()+1);renderAdminDatePicker();}
+function renderAdminDatePicker(){document.getElementById("adminDateTitle").textContent=adminDateMonthName(adminDateView);const y=adminDateView.getFullYear();const m=adminDateView.getMonth();const first=new Date(y,m,1);const startOffset=(first.getDay()+6)%7;const start=new Date(y,m,1-startOffset);const today=adminDateTodayString();const grid=document.getElementById("adminDateGrid");grid.innerHTML="";for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);const iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");const btn=document.createElement("button");btn.type="button";btn.className="adminDateCell";if(d.getMonth()!==m)btn.classList.add("other");if(iso===adminDateTemp)btn.classList.add("selected");if(iso===today)btn.classList.add("today");btn.textContent=d.getDate();btn.addEventListener("click",()=>{adminDateTemp=iso;renderAdminDatePicker();});grid.appendChild(btn);}}
+function confirmAdminDatePicker(){if(adminDateTargetId&&adminDateTemp){setAdminDateInput(adminDateTargetId,adminDateTemp);activeDateRange="custom";const hidden=document.getElementById("periodFilter");if(hidden)hidden.value="custom";visibleCount=20;renderReceipts();}closeAdminDatePicker();}
+document.addEventListener("DOMContentLoaded",function(){const overlay=document.getElementById("adminDateOverlay");if(overlay)overlay.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});});
+</script>
+
+<style id="mr-admin-header-touch-lock-v2">
+.adminTop{
+  touch-action:none !important;
+  overscroll-behavior:none !important;
+}
+.adminContent{
+  touch-action:pan-y !important;
+  overscroll-behavior-y:contain !important;
+}
+</style>
+
+<script id="mr-admin-header-touch-lock-v2-js">
+(function(){
+  function installHeaderLock(){
+    var header = document.querySelector(".adminTop");
+    if(!header || header.dataset.touchLockV2 === "1") return;
+
+    header.dataset.touchLockV2 = "1";
+
+    header.addEventListener("touchmove", function(e){
+      e.preventDefault();
+    }, { passive:false });
+
+    header.addEventListener("gesturestart", function(e){
+      e.preventDefault();
+    }, { passive:false });
+
+    header.addEventListener("gesturechange", function(e){
+      e.preventDefault();
+    }, { passive:false });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", installHeaderLock, { once:true });
+  }else{
+    installHeaderLock();
+  }
+})();
+</script>
+
+
+<style id="mr-period-dropdown-final">
+/* Alte Zeitraum-Button-Zeile entfällt vollständig */
+.dateFilterRow,
+.dateQuickBtn{
+  display:none !important;
+}
+
+.periodDropdownWrap{
+  position:relative;
+  width:100%;
+  margin-bottom:10px;
+}
+
+.periodDropdownBtn{
+  position:relative;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  height:44px !important;
+  padding:0 38px 0 12px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  background:#1c1c1f !important;
+  color:#fff !important;
+  font-size:12px !important;
+  font-weight:500 !important;
+  text-align:center !important;
+}
+
+.periodArrow{
+  position:absolute;
+  right:24px;
+  top:50%;
+  transform:translateY(-50%);
+  width:0;
+  height:0;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:6px solid #fff;
+  pointer-events:none;
+}
+
+.periodDropdownMenu{
+  display:none;
+  position:absolute;
+  top:48px;
+  left:0;
+  width:100%;
+  background:#1c1c1f;
+  border:1px solid #C8CF04 !important;
+  border-radius:14px;
+  overflow:hidden;
+  z-index:90;
+  box-shadow:0 12px 34px rgba(0,0,0,.55);
+}
+
+.periodDropdownMenu.show{
+  display:block;
+}
+
+.periodDropdownMenu button{
+  width:100%;
+  height:40px;
+  line-height:40px;
+  border:0;
+  border-bottom:1px solid #2a2a2a;
+  border-radius:0;
+  background:#1c1c1f;
+  color:#fff;
+  font-size:12px;
+  font-weight:500;
+  text-align:center;
+}
+
+.periodDropdownMenu button:last-child{
+  border-bottom:0;
+}
+
+.periodDropdownMenu button:active{
+  background:#C8CF04;
+  color:#000;
+}
+
+/* Von und Bis bleiben dauerhaft sichtbar und anklickbar */
+.dateRangeRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:12px !important;
+  margin-bottom:10px !important;
+}
+
+.dateRangeRow .adminDateField{
+  pointer-events:auto !important;
+  opacity:1 !important;
+}
+</style>
+
+<script id="mr-period-dropdown-outside-close">
+document.addEventListener("click",function(e){
+  const wrap=e.target.closest(".periodDropdownWrap");
+  if(!wrap){
+    const menu=document.getElementById("periodDropdownMenu");
+    if(menu)menu.classList.remove("show");
+  }
+});
+</script>
+
+
+<style id="mr-admin-filter-layout-final">
+/* Suchfeld über die komplette Breite */
+.searchFullRow{
+  display:block !important;
+  width:100% !important;
+  margin-bottom:10px !important;
+}
+.searchFullRow #searchInput{
+  width:100% !important;
+  height:36px !important;
+  min-height:36px !important;
+  box-sizing:border-box !important;
+}
+
+/* Alle Status links und Zeitraum rechts auf einer Linie */
+.filterDropdownRow{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:8px !important;
+  width:100% !important;
+  margin-bottom:10px !important;
+  align-items:start !important;
+}
+.filterDropdownRow .statusDropdownWrap,
+.filterDropdownRow .periodDropdownWrap{
+  width:100% !important;
+  margin:0 !important;
+}
+.filterDropdownRow .statusDropdownBtn,
+.filterDropdownRow .periodDropdownBtn{
+  width:100% !important;
+  height:36px !important;
+  min-height:36px !important;
+  border-radius:12px !important;
+  box-sizing:border-box !important;
+}
+
+/* Kein gelber Außenrahmen bei beiden geöffneten Dropdown-Menüs */
+.statusDropdownMenu,
+.periodDropdownMenu{
+  border:0 !important;
+  outline:0 !important;
+}
+
+/* Zeitraum-Menü sitzt direkt unter seinem Feld */
+.periodDropdownMenu{
+  top:42px !important;
+}
+</style>
+
+
+<style id="mr-admin-fixed-controls-corrected">
+/* Gesamte App bleibt innerhalb des sichtbaren iPhone-Bereichs. */
+html,
+body{
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  margin:0 !important;
+  overflow:hidden !important;
+  overscroll-behavior:none !important;
+}
+
+.appShell{
+  width:100% !important;
+  height:100dvh !important;
+  min-height:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+}
+
+/* Header bleibt fest sichtbar. */
+.adminTop{
+  flex:0 0 auto !important;
+  position:relative !important;
+  top:auto !important;
+  width:100% !important;
+  z-index:20 !important;
+  background:#000 !important;
+  touch-action:none !important;
+}
+
+/* Der äußere Admin-Bereich scrollt nicht. */
+.adminContent{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  height:auto !important;
+  overflow:hidden !important;
+  padding:16px !important;
+  display:block !important;
+}
+
+.adminGrid{
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  display:block !important;
+}
+
+/* Karte füllt den verfügbaren Bereich. */
+.adminGrid > .card.wide{
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+/* Alle Filter, Buttons und Überschriften behalten ihre Originalhöhe. */
+.adminGrid > .card.wide > *:not(#receiptsBox){
+  flex:0 0 auto !important;
+  flex-shrink:0 !important;
+}
+
+/* Nur die Quittungsliste scrollt. */
+#receiptsBox{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  height:auto !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior-y:contain !important;
+  touch-action:pan-y !important;
+  margin-top:12px !important;
+  padding-right:2px !important;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom)) !important;
+}
+
+/* Quittungskarten dürfen niemals zusammengedrückt werden. */
+#receiptsBox .receiptItem,
+#receiptsBox .countText,
+#receiptsBox .moreBtn,
+#receiptsBox .empty,
+#receiptsBox .loadingText{
+  flex:0 0 auto !important;
+  flex-shrink:0 !important;
+}
+
+#receiptsBox .receiptItem{
+  height:auto !important;
+  min-height:112px !important;
+  overflow:hidden !important;
+}
+</style>
+
+
+<script id="mr-admin-fixed-controls-corrected-js">
+(function(){
+  function install(){
+    var header = document.querySelector(".adminTop");
+    if(!header || header.dataset.fixedControlsCorrected === "1") return;
+
+    header.dataset.fixedControlsCorrected = "1";
+    header.addEventListener("touchmove", function(e){
+      e.preventDefault();
+    }, {passive:false});
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", install, {once:true});
+  }else{
+    install();
+  }
+})();
+</script>
+
+
+<style id="mr-admin-header-card-gap-final">
+/* Trennlinie unter Abmelden / Admin / Logo entfernen */
+.adminTop{
+  border-bottom:0 !important;
+}
+
+/* Quittungen-Fenster näher an den Header schieben */
+.adminContent{
+  padding-top:8px !important;
+}
+
+/* Keine zusätzliche obere Verschiebung im Grid */
+.adminGrid{
+  margin-top:0 !important;
+}
+
+.adminGrid > .card.wide{
+  margin-top:0 !important;
+}
+</style>
+
+
+<style id="gap-match-terminbuch">
+.adminContent,
+.mainContent,
+.content{
+    padding-top:0 !important;
+}
+.card:first-child,
+.quittungen-card,
+#quittungenCard{
+    margin-top:-18px !important;
+}
+</style>
+
+
+<script id="mr-info-popup-close-button-only">
+(function(){
+  function install(){
+    var overlay = document.getElementById("infoOverlay");
+    if(!overlay || overlay.dataset.closeButtonOnly === "1") return;
+
+    overlay.dataset.closeButtonOnly = "1";
+
+    overlay.addEventListener("click", function(e){
+      if(e.target === overlay){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+
+    overlay.addEventListener("touchend", function(e){
+      if(e.target === overlay){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, {passive:false, capture:true});
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", install, {once:true});
+  }else{
+    install();
+  }
+})();
+</script>
+
+
+<style id="mr-period-exactly-like-status-final">
+/* Nur Zeitraum wird 1:1 an Alle Status angeglichen */
+.filterDropdownRow .periodDropdownWrap{
+  position:relative !important;
+  width:100% !important;
+  height:36px !important;
+  min-height:36px !important;
+  margin:0 !important;
+  display:block !important;
+}
+
+.filterDropdownRow .periodDropdownBtn{
+  position:relative !important;
+  width:100% !important;
+  height:36px !important;
+  min-height:36px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:12px !important;
+  background:#1c1c1f !important;
+  color:#fff !important;
+  font-size:12px !important;
+  font-weight:500 !important;
+  line-height:1 !important;
+  text-align:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-sizing:border-box !important;
+}
+
+.filterDropdownRow .periodArrow{
+  position:absolute !important;
+  right:10px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:0 !important;
+  height:0 !important;
+  border-left:5px solid transparent !important;
+  border-right:5px solid transparent !important;
+  border-top:6px solid #fff !important;
+  pointer-events:none !important;
+}
+
+.filterDropdownRow .periodDropdownMenu{
+  top:42px !important;
+  left:0 !important;
+  right:auto !important;
+  width:100% !important;
+  border:0 !important;
+  border-radius:14px !important;
+  background:#1c1c1f !important;
+  overflow:hidden !important;
+  z-index:90 !important;
+  box-shadow:0 12px 34px rgba(0,0,0,.55) !important;
+}
+
+.filterDropdownRow .periodDropdownMenu button{
+  width:100% !important;
+  height:36px !important;
+  line-height:36px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-bottom:1px solid #2a2a2a !important;
+  border-radius:0 !important;
+  background:#1c1c1f !important;
+  color:#fff !important;
+  font-size:12px !important;
+  font-weight:500 !important;
+  text-align:center !important;
+}
+
+.filterDropdownRow .periodDropdownMenu button:last-child{
+  border-bottom:0 !important;
+}
+</style>
+
+</body>
+</html>
